@@ -58,6 +58,58 @@ servers_names = []
 for i in range(1, servers + 1):
     servers_names.append("Server" + str(i))
 
+links = []
+
+if selected_topology == "Small Office":
+    for i in range(len(client_names)):
+        switch_index = i % len(switch_names)
+        links.append((client_names[i], switch_names[switch_index]))
+
+    for switch in switch_names:
+        links.append((switch, "R1"))
+
+    for i in range(len(router_names) - 1):
+        links.append((router_names[i], router_names[i + 1]))
+    
+    for server in servers_names:
+        links.append((router_names[-1], server))
+
+elif selected_topology == "Branch Network":
+    for i in range(len(client_names)):
+        switch_index = i % len(switch_names)
+        links.append((client_names[i], switch_names[switch_index]))
+    
+    for switch in switch_names:
+        links.append((switch, "R1"))
+
+    for i in range(len(router_names) - 1):
+        links.append((router_names[i], router_names[i + 1]))
+    
+    for server in servers_names:
+        links.append((router_names[-1], server))
+
+elif selected_topology == "Multi VLAN":
+    vlan_ids = [10, 20, 30]
+
+    for i in range(len(client_names)):
+        vlan_index = i % len(vlan_ids)
+        switch_index = i % len(switch_names)
+
+        vlan_id = vlan_ids[vlan_index]
+
+        links.append((client_names[i], switch_names[switch_index], vlan_id))
+
+    for switch in switch_names:
+        links.append((switch, "R1"))
+
+    for server in servers_names:
+        links.append(("R1", server))
+
+print("\n=== Network Links ===")
+
+for link in links:
+    print(link)
+
 print("topology_map:", topology_map)
 print("Routers :", routers)
 print("Switches :", switches)
