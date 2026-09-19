@@ -57,7 +57,15 @@ for i in range(1, switches + 1):
 servers_names = []
 for i in range(1, servers + 1):
     servers_names.append("Server" + str(i))
+lan_number = random.randint(1, 254)
+lan_network = "192.168." + str(lan_number)
 
+client_ips = []
+
+for i in range(len(client_names)):
+    ip = lan_network + "." + str(i + 10)
+    client_ips.append(ip)
+    
 links = []
 
 if selected_topology == "Small Office":
@@ -118,5 +126,6 @@ print("servers :", servers)
 print("Routers :", router_names)
 print("Switches :", switch_names)
 print("Clients :", client_names)
+print("Client IPs:", client_ips)
 print("Servers :", servers_names)
 
