@@ -8,13 +8,10 @@ faults = [
     "Wrong Static Route",
     "ACL Block"
 ]
+acl_rules = []
 
 # 네트워크 종류
-topologies = [
-    "Small Office",
-    "Branch Network",
-    "Multi VLAN"
-]
+topologies = ["Small Office", "Branch Network", "Multi VLAN"]
 
 selected_fault = random.choice(faults)
 selected_topology = random.choice(topologies)
@@ -83,6 +80,10 @@ default_gateway = router_lan_ip
 for i in range(len(client_names)):
     ip = lan_network + "." + str(i + 10)
     client_ips.append(ip)
+client_gateways = []
+
+for i in range(len(client_names)):
+    client_gateways.append(default_gateway)
 
 # Multi VLAN 서브네팅
 vlan_ids = [10, 20, 30]
@@ -187,7 +188,8 @@ if len(router_names) > 1:
     for i in range(len(router_names) - 1):
         current_router = router_names[i]
         next_router_ip = router_links[i][3]
-
+        
+     
         routing_tables[current_router].append((server_netwrok + ".0/24", next_router_ip))
 if len(router_names) > 1:
     for i in range(1, len(router_names)):
@@ -195,6 +197,116 @@ if len(router_names) > 1:
         previous_router_ip = router_links[i - 1][1]
 
         routing_tables[current_router].append((lan_network + ".0/24", previous_router_ip))
+
+# 장애 주입
+    # Wrong Static Route
+fault_info = None
+
+if selected_fault == "Wrong Static Route":
+    possible_routers = []
+
+    for router in router_names:
+        if len(routing_tables[router]) > 0:
+            possible_routers.append(router)
+
+    if len(possible_routers) > 0:
+        target_router = random.choice(possible_routers)
+
+        route_index = random.randint(0, len(routing_tables[target_router]) - 1)
+
+        old_route = routing_tables[target_router][route_index]
+
+        destination = old_route[0]
+        old_next_hop = old_route[1]
+
+        worng_next_hop = "10.255.255.254"
+
+        routing_tables[target_router][route_index] = (destination, worng_next_hop)
+
+        fault_info = (target_router, destination, old_next_hop, worng_next_hop)
+
+    # Wrong Default Gateway
+if selected_fault == "Wrong Default Gateway":
+    if selected_topology == "Multi VLAN":
+        target_client_index = random.randint(0, len(vlan_client_ips) - 1)
+
+        target_client = vlan_client_ips[target_client_index]
+        target_client_index = random.randint(0, len(client_names) - 1)
+        client_name = client_names[target_client_index]
+        client_name = target_client[0]
+
+        vlan_id = target_client[1]
+        client_ip = target_client[2]
+        old_gateway = target_client[3]
+
+        wrong_gateway = "192.168.255.254"
+
+        vlan_client_ips[target_client_index] = (client_name, vlan_id, client_ip, wrong_gateway)
+        fault_info = (client_name, old_gateway, wrong_gateway)
+
+    else:
+        target_client_index = random.randint(0, len(client_names ) - 1)
+        target_client = client_names[target_client_index]
+        old_gateway = client_gateways[target_client_index]
+        wrong_gateway = lan_network + ".254"
+        client_gateways[target_client_index] = wrong_gateway
+        fault_info = (target_client, old_gateway, wrong_gateway)
+    # Wrong IP Address
+if selected_fault == "Wrong IP Address":
+    if selected_topology == "Multi VLAN":
+        target_client_index = random.randint(0, len(vlan_client_ips) - 1)
+
+        target_client = vlan_client_ips[target_client_index]
+
+        client_name = target_client[0]
+        vlan_id = target_client[1]
+        old_ip = target_client[2]
+        gateway = target_client[3]
+
+        wrong_ip = "192.168.250." + str(target_client_index + 10)
+
+        vlan_client_ips[target_client_index] = (client_name, vlan_id, wrong_ip, gateway)
+        fault_info = (client_name, old_ip, wrong_ip)
+
+    else:
+        target_client_index = random.randint(0, len(client_names) - 1)
+        
+        client_name = client_names[target_client_index]
+
+        old_ip = client_ips[target_client_index]
+        wrong_ip = "192.168.250." + str(target_client_index + 10)
+
+        fault_info = (client_name, old_ip, wrong_ip)
+    # Interface Down
+down_links = []
+
+if selected_fault == "Interface Down":
+    if len(links) > 0:
+        target_link_index = random.randint(0, len(links) - 1)
+
+        target_link = links[target_link_index]
+
+        down_links.append(target_link)
+
+        fault_info = (target_link)
+    # ACL Block
+if selected_fault ==  "ACL Block":
+    target_client_index = random.randint(0, len(client_names) - 1)
+
+    client_name = client_names[target_client_index]
+
+    if selected_topology == "Multi VLAN":
+        target_client = vlan_client_ips[target_client_index]
+        client_ip = target_client[2]
+
+    else:
+        client_ip = client_ips[target_client_index]
+    
+    target_server = random.choice(servers_names)
+
+    acl_rules.append(("DENY", client_ip, target_server))
+
+    fault_info = (client_name, client_ip, target_server)
 
 # 결과 출력
 print("\n=== Network Links ===")
@@ -247,3 +359,30 @@ print("Client IPs:", client_ips)
 print("Servers :", servers_names)
 print("Router LAN IP :", router_lan_ip)
 print("Default Gateway :", default_gateway)
+
+if selected_fault == "Wrong Static Route" and fault_info != None:
+    print("\n=== DEBUG Fault Info ===")
+    print("Target Router :", fault_info[0])
+    print("Destination   :", fault_info[1])
+    print("Old Next Hop  :", fault_info[2])
+    print("Wrong Next Hop:", fault_info[3])
+
+elif selected_fault == "Wrong Default Gateway" and fault_info != None:
+    print("\n=== DEBUG Fault Info ===")
+    print("Target Client :", fault_info[0])
+    print("Old Gateway   :", fault_info[1])
+    print("Wrong Gateway :", fault_info[2])
+
+elif selected_fault == "Wrong IP Address" and fault_info != None:
+    print("\n=== DEBUG Fault Info ===")
+    print("Target Client :", fault_info[0])
+    print("Old IP        :", fault_info[1])
+    print("Wrong IP      :", fault_info[2])
+elif selected_fault == "Interface Down" and fault_info != None:
+    print("\n=== DEBUG Fault Info ===")
+    print("Down Link :", fault_info[0])
+elif selected_fault == "ACL Block" and fault_info != None:
+    print("\n=== DEBUG Fault Info ===")
+    print("Blocked Client :", fault_info[0])
+    print("Client IP      :", fault_info[1])
+    print("Target Server  :", fault_info[2])
