@@ -62,6 +62,16 @@ servers_names = []
 for i in range(1, servers + 1):
     servers_names.append("Server" + str(i))
 
+# 서버 네트워크 분리
+server_netwrok = "172.16.18"
+server_gateway = server_netwrok + ".1"
+
+server_ips = []
+
+for i in range(len(servers_names)):
+    ip = server_netwrok + "." + str(i + 10)
+    server_ips.append(ip)
+
 # PC쪽 네트워크
 lan_number = random.randint(1, 254)
 lan_network = "192.168." + str(lan_number)
@@ -180,6 +190,13 @@ print("\n=== Router Links ===")
 for link in router_links:
     print(link)
 
+print("\n=== Server Network ===")
+print("Server Network :", server_netwrok + ".0/24")
+print("Server Gateway :", server_gateway)
+
+for i in range(len(servers_names)):
+    print(servers_names[i], ":", server_ips[i])
+
 if selected_topology == "Multi VLAN":
     print("\n=== VLAN Clients ===")
 
@@ -193,9 +210,11 @@ if selected_topology == "Multi VLAN":
     for vlan_id in vlan_ids:
         print("VLAN", vlan_id,":",vlan_networks[vlan_id],"Gateway :", vlan_gateways[vlan_id])
 
+print("\n=== 장비 갯수 ===")
 print("Switches :", switches)
 print("Clients :", clients)
 print("servers :", servers)
+print("\n=== 장비 이름 ===")
 print("Routers :", router_names)
 print("Switches :", switch_names)
 print("Clients :", client_names)
