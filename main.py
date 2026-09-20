@@ -78,26 +78,33 @@ for i in range(len(client_names)):
 vlan_ids = [10, 20, 30]
 vlan_client_ips = []
 vlan_gateways = {}
+vlan_networks = {}
 router_vlan_interfaces = []
 
 if selected_topology == "Multi VLAN":
-    for vlan_id in vlan_ids:
-        vlan_gateways[vlan_id] = "192.168." + str(vlan_id) + ".1"
+    base_network = "192.168.100."
 
-    for vlan_id in vlan_ids:
-        router_vlan_interfaces.append(
-            ("R1", vlan_id, vlan_gateways[vlan_id])
-        )
+    for i in range(len(vlan_ids)):
+        vlan_id = vlan_ids[i]
+        network_start = i * 64
 
+        vlan_networks[vlan_id] = base_network + str(network_start) + "/26"
+        vlan_gateways[vlan_id] = base_network + str(network_start + 1)
+    
     for i in range(len(client_names)):
         vlan_id = vlan_ids[i % len(vlan_ids)]
-        host_number = i + 10
+        vlan_index = vlan_ids.index(vlan_id)
 
-        ip = "192.168." + str(vlan_id) + "." + str(host_number)
+        network_start = vlan_index * 64
+        host_number = network_start + 10 + (i // len(vlan_ids))
 
-        vlan_client_ips.append(
-            (client_names[i], vlan_id, ip, vlan_gateways[vlan_id])
-        )
+        ip = base_network + str(host_number)
+
+        vlan_client_ips.append((client_names[i], vlan_id, ip, vlan_gateways[vlan_id]))
+    
+    for vlan_id in vlan_ids:
+        router_vlan_interfaces.append(("R1", vlan_id, vlan_gateways[vlan_id]))
+
 # 라우터 사이 IP
 
 router_links = []
@@ -183,8 +190,8 @@ print("Routers :", routers)
 if selected_topology == "Multi VLAN":
     print("\n=== Router VLAN Interfaces ===")
     
-    for interface in router_vlan_interfaces:
-        print(interface)
+    for vlan_id in vlan_ids:
+        print("VLAN", vlan_id,":",vlan_networks[vlan_id],"Gateway :", vlan_gateways[vlan_id])
 
 print("Switches :", switches)
 print("Clients :", clients)
