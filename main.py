@@ -177,6 +177,24 @@ elif selected_topology == "Multi VLAN":
 
     for server in servers_names:
         links.append((router_names[-1], server))
+# 라우팅 테이블(Static)
+routing_tables = {}
+
+for router in router_names:
+    routing_tables[router] = []
+
+if len(router_names) > 1:
+    for i in range(len(router_names) - 1):
+        current_router = router_names[i]
+        next_router_ip = router_links[i][3]
+
+        routing_tables[current_router].append((server_netwrok + ".0/24", next_router_ip))
+if len(router_names) > 1:
+    for i in range(1, len(router_names)):
+        current_router = router_names[i]
+        previous_router_ip = router_links[i - 1][1]
+
+        routing_tables[current_router].append((lan_network + ".0/24", previous_router_ip))
 
 # 결과 출력
 print("\n=== Network Links ===")
@@ -189,6 +207,13 @@ print("\n=== Router Links ===")
 
 for link in router_links:
     print(link)
+print("\n=== Routing Table ===")
+
+for router in router_names:
+    print(router)
+
+    for router in routing_tables[router]:
+        print(" Destination : ", router[0], "   Next Hop : ", router[1])
 
 print("\n=== Server Network ===")
 print("Server Network :", server_netwrok + ".0/24")
