@@ -1,4 +1,6 @@
 import random
+import copy
+
 debug_mode = True
 
 # 장애 종류
@@ -215,6 +217,15 @@ print("Selected fault:", selected_fault)
 fault_info = None
 down_links = []
 acl_rules = []
+
+# 정상 상태 저장
+healthy_state = {
+    "client_ips": copy.deepcopy(client_ips),
+    "client_gateways": copy.deepcopy(client_gateways),
+    "vlan_client_ips": copy.deepcopy(vlan_client_ips),
+    "routing_tables": copy.deepcopy(routing_tables),
+    "down_links": copy.deepcopy(down_links),
+    "acl_rules": copy.deepcopy(acl_rules)}
 
     # Wrong Static Route
 if selected_fault == "Wrong Static Route":
