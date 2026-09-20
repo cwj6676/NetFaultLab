@@ -1,6 +1,13 @@
 import random
 import copy
 
+seed = input("Seed (Enter = Randaom): ")
+
+if seed == "":
+    seed = random.randint(1000, 999999)
+
+random.seed(int(seed))
+
 debug_mode = True
 
 # 장애 종류
@@ -13,6 +20,7 @@ selected_fault = random.choice(faults)
 selected_topology = random.choice(topologies)
 
 print("NetFaultLab Started")
+print("Using Seed:", seed)
 print("Selected topology:", selected_topology)
 
 # 토폴로지별 장비 수
@@ -568,66 +576,18 @@ if debug_mode == True and fault_info != None:
         print("Client IP     :", fault_info["client_ip"])
         print("Target Server :", fault_info["server"])
 
+# 현재 상태 저장
+current_state = {
+    "client_ips": copy.deepcopy(client_ips),
+    "client_gateways": copy.deepcopy(client_gateways),
+    "vlan_client_ips": copy.deepcopy(vlan_client_ips),
+    "routing_tables": copy.deepcopy(routing_tables),
+    "down_links": copy.deepcopy(down_links),
+    "acl_rules": copy.deepcopy(acl_rules)}
+
 print("\n=== Verification ===")
 
-recovery_verified = False
-
-if selected_fault == "Wrong IP Address":
-    target_client = fault_info["target"]
-    target_index = client_names.index(target_client)
-
-    if selected_topology == "Multi VLAN":
-        current_ip = vlan_client_ips[target_index][2]
-
-    else:
-        current_ip = client_ips[target_index]
-
-    if current_ip == fault_info["old_value"]:
-        recovery_verified = True
-
-
-elif selected_fault == "Wrong Default Gateway":
-    target_client = fault_info["target"]
-    target_index = client_names.index(target_client)
-
-    if selected_topology == "Multi VLAN":
-        current_gateway = vlan_client_ips[target_index][3]
-
-    else:
-        current_gateway = client_gateways[target_index]
-
-    if current_gateway == fault_info["old_value"]:
-        recovery_verified = True
-
-
-elif selected_fault == "Wrong Static Route":
-    target_router = fault_info["target"]
-
-    for route in routing_tables[target_router]:
-        if route[0] == fault_info["destination"]:
-            if route[1] == fault_info["old_value"]:
-                recovery_verified = True
-
-
-elif selected_fault == "Interface Down":
-    target_link = fault_info["target"]
-
-    if target_link not in down_links:
-        recovery_verified = True
-
-
-elif selected_fault == "ACL Block":
-    target_rule = (
-        "DENY",
-        fault_info["client_ip"],
-        fault_info["server"]
-    )
-
-    if target_rule not in acl_rules:
-        recovery_verified = True
-
-
-if recovery_verified == True:
+if current_state == healthy_state:
     print("Network Recovery Verified")
 
 else:
