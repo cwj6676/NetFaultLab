@@ -439,6 +439,96 @@ elif selected_fault == "Interface Down":
 elif selected_fault == "ACL Block":
     print(fault_info["target"], "cannot reach", fault_info["server"])
 
+print("\n=== Recovery Check ===")
+
+if selected_fault == "Wrong Static Route":
+    user_answer = input("Correct Next Hop: ")
+
+    if user_answer == fault_info["old_value"]:
+        target_router = fault_info["target"]
+
+        for i in range(len(routing_tables[target_router])):
+            route = routing_tables[target_router][i]
+
+            if route[0] == fault_info["destination"]:
+                routing_tables[target_router][i] = (fault_info["destination"],fault_info["old_value"])
+
+        print("Recovery Successful")
+
+    else:
+        print("Recovery Failed")
+
+elif selected_fault == "Wrong Default Gateway":
+    user_answer = input("Correct Gateway: ")
+
+    if user_answer == fault_info["old_value"]:
+        print("Recovery Successful")
+
+        target_client = fault_info["target"]
+        target_index = client_names.index(target_client)
+
+        if selected_topology == "Multi VLAN":
+            old_client = vlan_client_ips[target_index]
+
+            vlan_client_ips[target_index] = (old_client[0],old_client[1],old_client[2],fault_info["old_value"])
+
+        else:
+            client_gateways[target_index] = fault_info["old_value"]
+
+    else:
+        print("Recovery Failed")
+
+
+elif selected_fault == "Wrong IP Address":
+    user_answer = input("Correct IP Address: ")
+
+    if user_answer == fault_info["old_value"]:
+        target_client = fault_info["target"]
+        target_index = client_names.index(target_client)
+
+        if selected_topology == "Multi VLAN":
+            old_client = vlan_client_ips[target_index]
+
+            vlan_client_ips[target_index] = (old_client[0],old_client[1],fault_info["old_value"],old_client[3])
+
+        else:
+            client_ips[target_index] = fault_info["old_value"]
+
+        print("Recovery Successful")
+
+    else:
+        print("Recovery Failed")
+
+
+elif selected_fault == "Interface Down":
+    user_answer = input("Interface State (up/down): ")
+
+    if user_answer.lower() == "up":
+        target_link = fault_info["target"]
+
+        if target_link in down_links:
+            down_links.remove(target_link)
+
+        print("Recovery Successful")
+
+    else:
+        print("Recovery Failed")
+
+
+elif selected_fault == "ACL Block":
+    user_answer = input("ACL Action (remove/keep): ")
+
+    if user_answer.lower() == "remove":
+        target_rule = ("DENY",fault_info["client_ip"],fault_info["server"])
+
+        if target_rule in acl_rules:
+            acl_rules.remove(target_rule)
+
+        print("Recovery Successful")
+
+    else:
+        print("Recovery Failed")
+
 # 장애 확인
 if debug_mode == True and fault_info != None:
     print("\n=== DEBUG Fault Info ===")
@@ -466,3 +556,68 @@ if debug_mode == True and fault_info != None:
         print("Blocked Client:", fault_info["target"])
         print("Client IP     :", fault_info["client_ip"])
         print("Target Server :", fault_info["server"])
+
+print("\n=== Verification ===")
+
+recovery_verified = False
+
+if selected_fault == "Wrong IP Address":
+    target_client = fault_info["target"]
+    target_index = client_names.index(target_client)
+
+    if selected_topology == "Multi VLAN":
+        current_ip = vlan_client_ips[target_index][2]
+
+    else:
+        current_ip = client_ips[target_index]
+
+    if current_ip == fault_info["old_value"]:
+        recovery_verified = True
+
+
+elif selected_fault == "Wrong Default Gateway":
+    target_client = fault_info["target"]
+    target_index = client_names.index(target_client)
+
+    if selected_topology == "Multi VLAN":
+        current_gateway = vlan_client_ips[target_index][3]
+
+    else:
+        current_gateway = client_gateways[target_index]
+
+    if current_gateway == fault_info["old_value"]:
+        recovery_verified = True
+
+
+elif selected_fault == "Wrong Static Route":
+    target_router = fault_info["target"]
+
+    for route in routing_tables[target_router]:
+        if route[0] == fault_info["destination"]:
+            if route[1] == fault_info["old_value"]:
+                recovery_verified = True
+
+
+elif selected_fault == "Interface Down":
+    target_link = fault_info["target"]
+
+    if target_link not in down_links:
+        recovery_verified = True
+
+
+elif selected_fault == "ACL Block":
+    target_rule = (
+        "DENY",
+        fault_info["client_ip"],
+        fault_info["server"]
+    )
+
+    if target_rule not in acl_rules:
+        recovery_verified = True
+
+
+if recovery_verified == True:
+    print("Network Recovery Verified")
+
+else:
+    print("Recovery Verification Failed")
