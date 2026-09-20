@@ -1,4 +1,5 @@
 import random
+debug_mode = True
 
 # 장애 종류
 faults = ["Interface Down", "Wrong IP Address", "Wrong Default Gateway", "Wrong Static Route", "ACL Block"]
@@ -10,7 +11,6 @@ selected_fault = random.choice(faults)
 selected_topology = random.choice(topologies)
 
 print("NetFaultLab Started")
-print("Selected fault:", selected_fault)
 print("Selected topology:", selected_topology)
 
 # 토폴로지별 장비 수
@@ -181,15 +181,35 @@ if len(router_names) > 1:
     for i in range(len(router_names) - 1):
         current_router = router_names[i]
         next_router_ip = router_links[i][3]
-        
-     
+    
         routing_tables[current_router].append((server_netwrok + ".0/24", next_router_ip))
+
 if len(router_names) > 1:
     for i in range(1, len(router_names)):
         current_router = router_names[i]
         previous_router_ip = router_links[i - 1][1]
 
-        routing_tables[current_router].append((lan_network + ".0/24", previous_router_ip))
+        if selected_topology == "Multi VLAN":
+            for vlan_id in vlan_ids:
+                routing_tables[current_router].append((vlan_networks[vlan_id], previous_router_ip))
+
+        else:
+            routing_tables[current_router].append((lan_network + ".0/24", previous_router_ip))
+
+available_faults = ["Interface Down", "Wrong IP Address", "Wrong Default Gateway", "ACL Block"]
+
+# Static Route가 실제로 있을 때만 추가
+possible_route_fault = False
+
+for router in router_names:
+    if len(routing_tables[router]) > 0:
+        possible_route_fault = True
+
+if possible_route_fault:
+    available_faults.append("Wrong Static Route")
+
+selected_fault = random.choice(available_faults)
+print("Selected fault:", selected_fault)
 
 # 장애 정보
 fault_info = None
@@ -331,8 +351,8 @@ print("\n=== Routing Table ===")
 for router in router_names:
     print(router)
 
-    for router in routing_tables[router]:
-        print(" Destination : ", router[0], "   Next Hop : ", router[1])
+    for route in routing_tables[router]:
+        print(" Destination : ", route[0], "   Next Hop : ", route[1])
 
 print("\n=== Server Network ===")
 print("Server Network :", server_netwrok + ".0/24")
@@ -347,7 +367,6 @@ if selected_topology == "Multi VLAN":
     for client in vlan_client_ips:
         print(client)
 
-print("Routers :", routers)
 if selected_topology == "Multi VLAN":
     print("\n=== Router VLAN Interfaces ===")
     
@@ -355,20 +374,73 @@ if selected_topology == "Multi VLAN":
         print("VLAN", vlan_id,":",vlan_networks[vlan_id],"Gateway :", vlan_gateways[vlan_id])
 
 print("\n=== 장비 갯수 ===")
+print("Routers :", routers)
 print("Switches :", switches)
 print("Clients :", clients)
-print("servers :", servers)
+print("Servers :", servers)
 print("\n=== 장비 이름 ===")
 print("Routers :", router_names)
 print("Switches :", switch_names)
 print("Clients :", client_names)
-print("Client IPs:", client_ips)
+if selected_topology != "Multi VLAN":
+    print("\n=== Client Network ===")
+
+    for i in range(len(client_names)):
+        print(client_names[i], "IP:", client_ips[i], "Gateway:", client_gateways[i])
 print("Servers :", servers_names)
-print("Router LAN IP :", router_lan_ip)
-print("Default Gateway :", default_gateway)
+if selected_topology != "Multi VLAN":
+    print("Router LAN IP :", router_lan_ip)
+    print("Default Gateway :", default_gateway)
+
+# 장애
+print("\n=== Problem ===")
+
+if selected_fault == "Wrong IP Address":
+    print(fault_info["target"], "cannot reach the network")
+
+elif selected_fault == "Wrong Default Gateway":
+    print(fault_info["target"], "cannot reach", random.choice(servers_names))
+
+elif selected_fault == "Wrong Static Route":
+    print("Clients cannot reach the Server Network")
+
+elif selected_fault == "Interface Down":
+    down_link = fault_info["target"]
+
+    left_device = down_link[0]
+    right_device = down_link[1]
+
+    # PC - Switch
+    if left_device.startswith("PC"):
+        print(left_device, "cannot reach the network")
+
+    # Router - Server
+    elif right_device.startswith("Server"):
+        print("Clients cannot reach", right_device)
+
+    # Switch - Router
+    elif left_device.startswith("SW") and right_device.startswith("R"):
+        affected_clients = []
+
+        for link in links:
+            if link[0].startswith("PC") and link[1] == left_device:
+                affected_clients.append(link[0])
+
+        print("Affected Clients:", affected_clients)
+        print("cannot reach the Server Network")
+
+    # Router - Router
+    elif left_device.startswith("R") and right_device.startswith("R"):
+        print("Network path to the Server Network is unavailable")
+
+    else:
+        print("Network connectivity problem detected")
+
+elif selected_fault == "ACL Block":
+    print(fault_info["target"], "cannot reach", fault_info["server"])
 
 # 장애 확인
-if fault_info != None:
+if debug_mode == True and fault_info != None:
     print("\n=== DEBUG Fault Info ===")
 
     if selected_fault == "Wrong Static Route":
