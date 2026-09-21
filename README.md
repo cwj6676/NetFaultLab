@@ -1,3 +1,5 @@
+[한국어 README](README_KR.md)
+
 # NetFaultLab
 
 NetFaultLab is a network troubleshooting practice project that generates random virtual network topologies, injects network faults, and allows users to diagnose and recover the network.
