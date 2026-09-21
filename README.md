@@ -21,8 +21,6 @@
 
 ## Demo
 
-> Add a real terminal GIF or screenshot here later for a stronger GitHub portfolio presentation.
-
 ```text
 netfault> inject
 Fault injected
