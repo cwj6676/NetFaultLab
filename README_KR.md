@@ -4,10 +4,14 @@
 >
 > 실제 Containerlab 환경을 구성하고, 장애를 주입한 뒤 CLI로 원인을 분석·복구하는 과정을 구현했습니다.
 
+> 🚧 **현재 개발 중인 프로젝트입니다.**
+>
+> 핵심 네트워크 구성 및 트러블슈팅 기능은 구현되어 있으며, UI, 테스트, 문서화, 사용성을 계속 개선하고 있습니다. 개발 과정에서 기능과 동작 방식이 변경될 수 있습니다.
+
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
 ![Docker](https://img.shields.io/badge/Docker-Containerlab-blue)
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20WSL2-lightgrey)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
 
 ## 프로젝트 한눈에 보기
 
@@ -20,6 +24,8 @@
 | 연동 | NetworkMonitor와 실시간 상태 연동 |
 
 ## 데모 화면
+
+> 아래 영역에 실제 실행 화면 GIF 또는 스크린샷을 추가하면 GitHub 포트폴리오 완성도가 크게 올라갑니다.
 
 ```text
 netfault> inject

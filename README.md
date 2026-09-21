@@ -4,10 +4,14 @@
 >
 > Builds real Containerlab topologies, injects faults into the live network, and lets the user diagnose and repair them through a CLI.
 
+> 🚧 **This project is currently under active development.**
+>
+> Core networking and troubleshooting features are implemented, but the UI, testing, documentation, and overall usability are still being improved. Features and behavior may change as development continues.
+
 ![Python](https://img.shields.io/badge/Python-3.x-blue)
 ![Docker](https://img.shields.io/badge/Docker-Containerlab-blue)
 ![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20WSL2-lightgrey)
-![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
 
 ## Project at a Glance
 
@@ -20,6 +24,8 @@
 | Integration | Live monitoring through NetworkMonitor |
 
 ## Demo
+
+> Add a real terminal GIF or screenshot here later for a stronger GitHub portfolio presentation.
 
 ```text
 netfault> inject
