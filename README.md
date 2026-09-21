@@ -19,12 +19,12 @@ The project started as a Python-based simulation and has been expanded to use Do
 - Automatic interface mapping
 - Real network fault injection
 - Real recovery operations
-- Connectivity verification using ping
+- Ping-based connectivity verification
 - Internal network state verification after recovery
 
 ## Supported Fault Scenarios
 
-NetFaultLab currently supports the following fault scenarios:
+NetFaultLab currently supports:
 
 - Interface Down
 - Wrong IP Address
@@ -32,46 +32,45 @@ NetFaultLab currently supports the following fault scenarios:
 - Wrong Static Route
 - ACL Block
 
-Each fault scenario is designed to simulate a troubleshooting process.
-
-The general flow is:
+Each scenario follows a troubleshooting workflow:
 
 1. Generate a healthy network state
 2. Deploy the network using Containerlab
 3. Verify normal connectivity
 4. Inject a network fault
 5. Verify connectivity failure
-6. Ask the user to identify and recover the problem
+6. Ask the user to troubleshoot the problem
 7. Apply the recovery configuration
-8. Verify connectivity again
+8. Verify connectivity after recovery
 9. Compare the recovered state with the original healthy state
 
 ## Real Fault Injection
 
 ### Interface Down
 
-A random network link is selected and the connected Linux interface is disabled.
-
-Example:
+A random network link is selected and an actual Linux interface inside the Containerlab environment is disabled.
 
 ```bash
 ip link set eth1 down
+```
 
 After the user enters the recovery action, the interface is enabled again.
 
+```bash
 ip link set eth1 up
+```
 
 Connectivity is tested before the fault, after the fault, and after recovery.
 
-Wrong IP Address
+### Wrong IP Address
 
 A client is selected and an incorrect IP address is applied to the actual Containerlab node.
 
 The correct IP configuration is restored after the user enters the correct value.
 
-Connectivity is verified using ping tests.
+Connectivity is verified before and after the fault and again after recovery.
 
-Wrong Default Gateway
+### Wrong Default Gateway
 
 A client receives an incorrect default gateway.
 
@@ -79,26 +78,27 @@ NetFaultLab modifies the actual Linux routing table inside the container and ver
 
 After the correct gateway is entered, the default route is restored and connectivity is tested again.
 
-Wrong Static Route
+### Wrong Static Route
 
 A router receives an incorrect next-hop address.
 
-The actual Linux routing table is modified using ip route.
+The Linux routing table is modified using `ip route`.
 
-The route is restored after the user identifies the correct next hop.
+After the user enters the correct next hop, the route is restored and connectivity is verified again.
 
-Connectivity is tested before the route fault, during the fault, and after recovery.
+### ACL Block
 
-ACL Block
+Traffic is blocked using Linux `iptables`.
 
-An ACL-style traffic block is applied using Linux iptables.
-
-Traffic to the selected test destination is blocked and connectivity failure is verified.
+The selected traffic is denied and connectivity failure is verified.
 
 After the user removes the ACL rule, the rule is deleted and connectivity is tested again.
 
-Network Topologies
-Small Office
+## Network Topologies
+
+### Small Office
+
+```text
 PC
  |
 Switch
@@ -106,7 +106,11 @@ Switch
 Router
  |
 Server
-Branch Network
+```
+
+### Branch Network
+
+```text
 PC
  |
 Switch
@@ -114,10 +118,13 @@ Switch
 R1 --- R2 --- R3
                |
              Server
+```
 
-The exact number of routers, switches, clients, and servers can change depending on the generated scenario.
+The exact number of routers, switches, clients, and servers changes depending on the generated scenario.
 
-Multi VLAN
+### Multi VLAN
+
+```text
 PCs
  |
 Switches
@@ -125,16 +132,21 @@ Switches
 Router
  |
 Server
+```
 
-Clients are distributed across VLANs such as:
+Clients are distributed across multiple VLANs:
 
+```text
 VLAN 10
 VLAN 20
 VLAN 30
+```
 
-The Python simulation also generates VLAN networks, gateways, and client IP addresses.
+The program generates VLAN networks, gateways, and client IP addresses.
 
-Example Workflow
+## Example Workflow
+
+```text
 NetFaultLab Started
 Using Seed: 12345
 Selected topology: Small Office
@@ -169,144 +181,166 @@ Recovery Successful
 
 === Verification ===
 Network Recovery Verified
-Technologies
-Python
-Linux
-Docker
-Containerlab
-iproute2
-iptables
-Git
-GitHub
-Project Structure
+```
+
+## Technologies
+
+- Python
+- Linux
+- Docker
+- Containerlab
+- iproute2
+- iptables
+- Git
+- GitHub
+
+## Project Structure
+
+```text
 NetFaultLab/
 ├── main.py
 ├── README.md
 ├── .gitignore
 ├── lab.clab.yml
 └── logs.txt
+```
 
-lab.clab.yml is generated automatically by the program.
+`lab.clab.yml` is generated automatically by the program.
 
-Runtime files such as generated logs or temporary lab files can be excluded from Git depending on the environment.
+Runtime files such as logs and generated lab files can be excluded from Git depending on the environment.
 
-Requirements
+## Requirements
 
-The current implementation is designed to run in a Linux environment.
+Current development environment:
 
-The development environment used for the project includes:
+- Ubuntu 22.04
+- WSL2
+- Python 3
+- Docker Engine
+- Containerlab
 
-Ubuntu 22.04 on WSL2
-Docker Engine
-Containerlab
-Python 3
+Docker must be running before deploying a Containerlab topology.
 
-Containerlab requires Docker to be running.
-
-Running NetFaultLab
+## Installation
 
 Clone the repository:
 
+```bash
 git clone git@github.com:cwj6676/NetFaultLab.git
+```
 
 Move into the project directory:
 
+```bash
 cd NetFaultLab
+```
 
-Run the program:
+Run NetFaultLab:
 
+```bash
 python3 main.py
+```
 
-NetFaultLab will generate a random topology, deploy the Containerlab environment, inject a random fault, and start the troubleshooting process.
+The program will generate a random network topology, deploy the Containerlab environment, inject a random fault, and begin the troubleshooting process.
 
-Seed
+## Seed Support
 
-NetFaultLab supports random seeds.
+NetFaultLab supports seeds for reproducible scenarios.
 
 Example:
 
+```text
 Seed (Enter = Random): 12345
+```
 
-Using the same seed makes it easier to reproduce the same generated scenario during testing and debugging.
+Using the same seed makes generated scenarios easier to reproduce during testing and debugging.
 
-Press Enter to use a random seed.
+Press Enter to generate a random seed.
 
-Recovery Verification
+## Recovery Verification
 
-NetFaultLab keeps a copy of the healthy network state before fault injection.
+Before fault injection, NetFaultLab stores a copy of the healthy network state.
 
-After the user performs recovery, the current state is compared with the original healthy state.
+After recovery, the current state is compared with the original state.
 
 Successful recovery:
 
+```text
 === Verification ===
 Network Recovery Verified
+```
 
 Failed recovery:
 
+```text
 === Verification ===
 Recovery Verification Failed
+```
 
-Real connectivity tests are also performed for supported Containerlab fault scenarios.
+Real connectivity tests are also performed for Containerlab-based fault scenarios.
 
-Current Status
+## Current Status
 
 NetFaultLab has progressed from a Python-only network fault simulator into a Containerlab-based troubleshooting lab.
 
-Current functionality includes:
+Currently implemented:
 
-Dynamic topology generation
-Containerlab deployment
-Linux container network configuration
-Real interface shutdown and recovery
-Real IP configuration faults
-Real default gateway faults
-Real static route faults
-Real ACL-based traffic blocking
-Ping-based failure and recovery verification
-Internal state recovery verification
-Limitations
+- Dynamic topology generation
+- Containerlab topology generation
+- Automatic Containerlab deployment
+- Linux container network configuration
+- Automatic interface mapping
+- Real interface shutdown and recovery
+- Real IP configuration faults
+- Real default gateway faults
+- Real static route faults
+- Real ACL-based traffic blocking
+- Ping-based failure verification
+- Ping-based recovery verification
+- Internal state recovery verification
 
-The current project still uses simplified Linux containers for network devices.
+## Limitations
 
-Nodes named as switches are currently Linux containers and do not yet behave as full Layer 2 Ethernet switches.
+The current version still uses simplified Linux containers as network devices.
 
-Some test IP addresses are used specifically to verify individual links and fault conditions.
+Nodes named as switches are Linux containers and do not yet behave as full Layer 2 Ethernet switches.
 
-The generated logical network configuration and the Containerlab test network are gradually being integrated into a more realistic end-to-end network environment.
+Some test IP addresses are currently used specifically for connectivity and fault verification.
 
-Planned Improvements
-Implement more realistic Layer 2 switching
-Add Linux bridge configuration
-Improve VLAN behavior
-Connect generated client IP addresses directly to the real lab network
-Connect generated server networks directly to the real lab network
-Expand static routing scenarios
-Add more fault types
-Improve logging and troubleshooting reports
-Add difficulty levels
-Improve automatic recovery verification
-Integrate with NetworkMonitor
-Allow NetworkMonitor to monitor NetFaultLab devices automatically
-NetworkMonitor Integration
+The generated logical network configuration and the actual Containerlab network are still being gradually integrated into a more realistic end-to-end network environment.
+
+## Planned Improvements
+
+- Implement more realistic Layer 2 switching
+- Add Linux bridge configuration
+- Improve VLAN behavior
+- Apply generated client IP addresses directly to the real lab
+- Apply generated server networks directly to the real lab
+- Expand static routing scenarios
+- Add additional network fault types
+- Improve logging and troubleshooting reports
+- Add difficulty levels
+- Improve automatic recovery verification
+- Integrate with NetworkMonitor
+- Allow NetworkMonitor to monitor deployed NetFaultLab devices automatically
+
+## NetworkMonitor Integration
 
 NetFaultLab is planned to work together with the separate NetworkMonitor project.
 
-The intended workflow is:
-
+```text
 NetFaultLab
     |
-    | Deploy virtual network
-    | Inject fault
+    | Deploy network / Inject fault
     v
 Containerlab Network
     |
-    | Device status / ping
+    | Device status / Ping
     v
 NetworkMonitor
     |
     | Detect WARNING / DOWN
-    |
+    v
 User Troubleshooting
     |
     | Recover network
@@ -316,22 +350,23 @@ NetworkMonitor
     | Detect RECOVERED
     v
 Recovery Verified
+```
 
-This will allow NetFaultLab to generate troubleshooting scenarios while NetworkMonitor detects and records network failures and recoveries.
+NetFaultLab will generate troubleshooting scenarios while NetworkMonitor detects and records network failures and recoveries.
 
-Purpose
+## Purpose
 
 The goal of NetFaultLab is to build practical experience with:
 
-Network troubleshooting
-IP addressing
-Default gateways
-Static routing
-ACL concepts
-Linux networking
-Docker
-Containerlab
-Fault isolation
-Network recovery verification
+- Network troubleshooting
+- IP addressing
+- Default gateways
+- Static routing
+- ACL concepts
+- Linux networking
+- Docker
+- Containerlab
+- Fault isolation
+- Network recovery verification
 
-The project is being developed as a hands-on networking portfolio project.
+This project is being developed as a hands-on networking portfolio project.
