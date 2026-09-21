@@ -25,8 +25,6 @@
 
 ## 데모 화면
 
-> 아래 영역에 실제 실행 화면 GIF 또는 스크린샷을 추가하면 GitHub 포트폴리오 완성도가 크게 올라갑니다.
-
 ```text
 netfault> inject
 Fault injected
