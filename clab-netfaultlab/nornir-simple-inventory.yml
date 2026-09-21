@@ -1,0 +1,56 @@
+---
+PC1:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.14
+PC2:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.4
+PC3:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.11
+PC4:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.10
+PC5:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.9
+PC6:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.7
+R1:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.13
+SW1:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.8
+SW2:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.6
+Server1:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.12
+Server2:
+    username: 
+    password: 
+    platform: linux
+    hostname: 172.20.20.5

@@ -1,0 +1,59 @@
+name: netfaultlab
+
+topology:
+  nodes:
+    PC1:
+      kind: linux
+      image: alpine:latest
+
+    SW1:
+      kind: linux
+      image: alpine:latest
+
+    PC2:
+      kind: linux
+      image: alpine:latest
+
+    SW2:
+      kind: linux
+      image: alpine:latest
+
+    PC3:
+      kind: linux
+      image: alpine:latest
+
+    PC4:
+      kind: linux
+      image: alpine:latest
+
+    PC5:
+      kind: linux
+      image: alpine:latest
+
+    PC6:
+      kind: linux
+      image: alpine:latest
+
+    R1:
+      kind: linux
+      image: alpine:latest
+
+    Server1:
+      kind: linux
+      image: alpine:latest
+
+    Server2:
+      kind: linux
+      image: alpine:latest
+
+  links:
+    - endpoints: ["PC1:eth1", "SW1:eth1"]
+    - endpoints: ["PC2:eth1", "SW2:eth1"]
+    - endpoints: ["PC3:eth1", "SW1:eth2"]
+    - endpoints: ["PC4:eth1", "SW2:eth2"]
+    - endpoints: ["PC5:eth1", "SW1:eth3"]
+    - endpoints: ["PC6:eth1", "SW2:eth3"]
+    - endpoints: ["SW1:eth4", "R1:eth1"]
+    - endpoints: ["SW2:eth4", "R1:eth2"]
+    - endpoints: ["R1:eth3", "Server1:eth1"]
+    - endpoints: ["R1:eth4", "Server2:eth1"]

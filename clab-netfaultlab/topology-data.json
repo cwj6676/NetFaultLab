@@ -1,0 +1,546 @@
+{
+  "name": "netfaultlab",
+  "type": "clab",
+  "clab": {
+    "config": {
+      "prefix": "clab",
+      "mgmt": {
+        "network": "clab",
+        "bridge": "br-5c8da1ce2710",
+        "ipv4-subnet": "172.20.20.0/24",
+        "ipv4-gw": "172.20.20.1",
+        "ipv6-subnet": "3fff:172:20:20::/64",
+        "ipv6-gw": "3fff:172:20:20::1",
+        "external-access": true
+      }
+    }
+  },
+  "ssh-pub-keys": ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBPPIfRsKBWztzYw0yl51zynUo5O3WgQ8LGOmHG8bBd9"],
+  "nodes": {
+    "PC1": {
+      "index": "0",
+      "shortname": "PC1",
+      "longname": "clab-netfaultlab-PC1",
+      "fqdn": "PC1.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC1",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.14",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::e",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC1",
+        "clab-node-longname": "clab-netfaultlab-PC1",
+        "clab-node-name": "PC1",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "PC2": {
+      "index": "1",
+      "shortname": "PC2",
+      "longname": "clab-netfaultlab-PC2",
+      "fqdn": "PC2.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC2",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.4",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::4",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC2",
+        "clab-node-longname": "clab-netfaultlab-PC2",
+        "clab-node-name": "PC2",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "PC3": {
+      "index": "2",
+      "shortname": "PC3",
+      "longname": "clab-netfaultlab-PC3",
+      "fqdn": "PC3.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC3",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.11",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::b",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC3",
+        "clab-node-longname": "clab-netfaultlab-PC3",
+        "clab-node-name": "PC3",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "PC4": {
+      "index": "3",
+      "shortname": "PC4",
+      "longname": "clab-netfaultlab-PC4",
+      "fqdn": "PC4.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC4",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.10",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::a",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC4",
+        "clab-node-longname": "clab-netfaultlab-PC4",
+        "clab-node-name": "PC4",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "PC5": {
+      "index": "4",
+      "shortname": "PC5",
+      "longname": "clab-netfaultlab-PC5",
+      "fqdn": "PC5.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC5",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.9",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::9",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC5",
+        "clab-node-longname": "clab-netfaultlab-PC5",
+        "clab-node-name": "PC5",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "PC6": {
+      "index": "5",
+      "shortname": "PC6",
+      "longname": "clab-netfaultlab-PC6",
+      "fqdn": "PC6.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC6",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.7",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::7",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/PC6",
+        "clab-node-longname": "clab-netfaultlab-PC6",
+        "clab-node-name": "PC6",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "R1": {
+      "index": "6",
+      "shortname": "R1",
+      "longname": "clab-netfaultlab-R1",
+      "fqdn": "R1.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/R1",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.13",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::d",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/R1",
+        "clab-node-longname": "clab-netfaultlab-R1",
+        "clab-node-name": "R1",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "SW1": {
+      "index": "7",
+      "shortname": "SW1",
+      "longname": "clab-netfaultlab-SW1",
+      "fqdn": "SW1.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/SW1",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.8",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::8",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/SW1",
+        "clab-node-longname": "clab-netfaultlab-SW1",
+        "clab-node-name": "SW1",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "SW2": {
+      "index": "8",
+      "shortname": "SW2",
+      "longname": "clab-netfaultlab-SW2",
+      "fqdn": "SW2.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/SW2",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.6",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::6",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/SW2",
+        "clab-node-longname": "clab-netfaultlab-SW2",
+        "clab-node-name": "SW2",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "Server1": {
+      "index": "9",
+      "shortname": "Server1",
+      "longname": "clab-netfaultlab-Server1",
+      "fqdn": "Server1.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/Server1",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.12",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::c",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/Server1",
+        "clab-node-longname": "clab-netfaultlab-Server1",
+        "clab-node-name": "Server1",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    },
+    "Server2": {
+      "index": "10",
+      "shortname": "Server2",
+      "longname": "clab-netfaultlab-Server2",
+      "fqdn": "Server2.netfaultlab.io",
+      "group": "",
+      "labdir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/Server2",
+      "kind": "linux",
+      "image": "alpine:latest",
+      "mgmt-net": "",
+      "mgmt-intf": "",
+      "mgmt-ipv4-address": "172.20.20.5",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "3fff:172:20:20::5",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "",
+      "labels": {
+        "clab-git-branch": "main",
+        "clab-git-hash": "0534ccd",
+        "clab-mgmt-net-bridge": "br-5c8da1ce2710",
+        "clab-node-group": "",
+        "clab-node-kind": "linux",
+        "clab-node-lab-dir": "/home/cwj6676/NetFaultLab/clab-netfaultlab/Server2",
+        "clab-node-longname": "clab-netfaultlab-Server2",
+        "clab-node-name": "Server2",
+        "clab-node-type": "",
+        "clab-owner": "cwj6676",
+        "clab-topo-file": "/home/cwj6676/NetFaultLab/lab.clab.yml",
+        "containerlab": "netfaultlab"
+      },
+      "port-bindings": [
+      ]
+    }
+  },
+  "links": [
+    {
+      "endpoints": {
+        "a": {
+          "node": "PC1",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:17:55:de",
+          "peer": "z"
+        },
+        "z": {
+          "node": "SW1",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:34:4e:16",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "PC2",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:46:07:ab",
+          "peer": "z"
+        },
+        "z": {
+          "node": "SW2",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:dc:e3:f8",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "PC3",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:79:96:fc",
+          "peer": "z"
+        },
+        "z": {
+          "node": "SW1",
+          "interface": "eth2",
+          "mac": "aa:c1:ab:79:98:06",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "PC4",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:d3:16:b2",
+          "peer": "z"
+        },
+        "z": {
+          "node": "SW2",
+          "interface": "eth2",
+          "mac": "aa:c1:ab:d4:04:a9",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "PC5",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:92:8c:ca",
+          "peer": "z"
+        },
+        "z": {
+          "node": "SW1",
+          "interface": "eth3",
+          "mac": "aa:c1:ab:00:e4:00",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "PC6",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:f5:bc:ba",
+          "peer": "z"
+        },
+        "z": {
+          "node": "SW2",
+          "interface": "eth3",
+          "mac": "aa:c1:ab:0f:58:ff",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "SW1",
+          "interface": "eth4",
+          "mac": "aa:c1:ab:83:66:74",
+          "peer": "z"
+        },
+        "z": {
+          "node": "R1",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:30:bc:04",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "SW2",
+          "interface": "eth4",
+          "mac": "aa:c1:ab:32:68:ac",
+          "peer": "z"
+        },
+        "z": {
+          "node": "R1",
+          "interface": "eth2",
+          "mac": "aa:c1:ab:92:44:a5",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "R1",
+          "interface": "eth3",
+          "mac": "aa:c1:ab:4f:6b:7e",
+          "peer": "z"
+        },
+        "z": {
+          "node": "Server1",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:47:41:dc",
+          "peer": "a"
+        }
+      }
+    },
+    {
+      "endpoints": {
+        "a": {
+          "node": "R1",
+          "interface": "eth4",
+          "mac": "aa:c1:ab:d1:2b:ae",
+          "peer": "z"
+        },
+        "z": {
+          "node": "Server2",
+          "interface": "eth1",
+          "mac": "aa:c1:ab:94:ee:6c",
+          "peer": "a"
+        }
+      }
+    }
+  ]
+}
