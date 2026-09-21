@@ -1,5 +1,53 @@
 # NetFaultLab
 
+> **네트워크 트러블슈팅 포트폴리오 프로젝트**
+>
+> 실제 Containerlab 환경을 구성하고, 장애를 주입한 뒤 CLI로 원인을 분석·복구하는 과정을 구현했습니다.
+
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Docker](https://img.shields.io/badge/Docker-Containerlab-blue)
+![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20WSL2-lightgrey)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+
+## 프로젝트 한눈에 보기
+
+| 항목 | 내용 |
+|---|---|
+| 목적 | 실제 네트워크 장애 분석 및 복구 연습 |
+| 핵심 기술 | Python, Docker, Containerlab, Linux Networking |
+| 네트워크 기능 | Bridge, VLAN, Static Routing, ACL, ICMP |
+| 장애 유형 | Wrong IP, Wrong Gateway, Wrong Route, Interface Down, ACL Block |
+| 연동 | NetworkMonitor와 실시간 상태 연동 |
+
+## 데모 화면
+
+> 아래 영역에 실제 실행 화면 GIF 또는 스크린샷을 추가하면 GitHub 포트폴리오 완성도가 크게 올라갑니다.
+
+```text
+netfault> inject
+Fault injected
+
+=== Problem ===
+PC2 cannot reach the network
+
+netfault> show ip
+netfault> show route
+netfault> show interface
+netfault> ping PC2 Server1
+netfault> configure
+netfault> verify
+```
+
+## 목차
+
+- [주요 기능](#주요-기능)
+- [지원 토폴로지](#지원-토폴로지)
+- [장애 시나리오](#장애-시나리오)
+- [트러블슈팅 CLI](#트러블슈팅-cli)
+- [NetworkMonitor 연동](#networkmonitor-연동)
+- [실행 방법](#실행-방법)
+- [현재 한계](#현재-한계)
+
 NetFaultLab은 Python과 Containerlab을 이용해 실제 Linux 네트워크 토폴로지를 만들고, 실행 중인 네트워크에 장애를 주입한 뒤 사용자가 직접 원인을 분석하고 복구하도록 만든 네트워크 트러블슈팅 실습 프로젝트입니다.
 
 단순히 장애 정답을 보여주는 시뮬레이터가 아니라, 일반 모드에서는 장애 종류와 잘못된 값을 숨기고 사용자가 IP, 게이트웨이, 라우팅, 인터페이스, ACL, Ping 결과를 직접 확인하면서 문제를 찾도록 설계했습니다.

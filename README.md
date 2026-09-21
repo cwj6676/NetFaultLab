@@ -1,5 +1,53 @@
 # NetFaultLab
 
+> **Network troubleshooting portfolio project**
+>
+> Builds real Containerlab topologies, injects faults into the live network, and lets the user diagnose and repair them through a CLI.
+
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Docker](https://img.shields.io/badge/Docker-Containerlab-blue)
+![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20WSL2-lightgrey)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen)
+
+## Project at a Glance
+
+| Item | Details |
+|---|---|
+| Goal | Hands-on network fault diagnosis and recovery |
+| Core Stack | Python, Docker, Containerlab, Linux Networking |
+| Network Features | Bridge, VLAN, Static Routing, ACL, ICMP |
+| Fault Types | Wrong IP, Wrong Gateway, Wrong Route, Interface Down, ACL Block |
+| Integration | Live monitoring through NetworkMonitor |
+
+## Demo
+
+> Add a real terminal GIF or screenshot here later for a stronger GitHub portfolio presentation.
+
+```text
+netfault> inject
+Fault injected
+
+=== Problem ===
+PC2 cannot reach the network
+
+netfault> show ip
+netfault> show route
+netfault> show interface
+netfault> ping PC2 Server1
+netfault> configure
+netfault> verify
+```
+
+## Table of Contents
+
+- [Features](#features)
+- [Supported Topologies](#supported-topologies)
+- [Fault Scenarios](#fault-scenarios)
+- [Troubleshooting CLI](#troubleshooting-cli)
+- [NetworkMonitor Integration](#networkmonitor-integration)
+- [Basic Usage](#basic-usage)
+- [Current Limitations](#current-limitations)
+
 NetFaultLab is a Python-based network troubleshooting lab that builds real Linux network topologies with Containerlab, injects faults into the running lab, and lets the user investigate and repair the network through a CLI.
 
 The project is designed as a hands-on troubleshooting environment rather than a simple network simulator. In normal mode, fault details are hidden, so the user must inspect IP addressing, gateways, routes, interfaces, ACLs, and connectivity to determine the cause.
