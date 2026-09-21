@@ -315,6 +315,343 @@ def recover_wrong_ip(client_name):
 
     print("Recovery:", client_name, "IP", correct_ip)
 
+
+# 기본 게이트웨이 테스트 환경 설정
+def configure_gateway_test(client_name, client_ip, correct_gateway):
+    target_link = None
+
+    for link in interface_map:
+        if link[0] == client_name or link[1] == client_name:
+            target_link = link
+            break
+
+    if target_link == None:
+        print("Client link not found")
+        return None, None
+
+    client_interface = interface_map[target_link][client_name]
+
+    if target_link[0] == client_name:
+        gateway_device = target_link[1]
+    else:
+        gateway_device = target_link[0]
+
+    gateway_interface = interface_map[target_link][gateway_device]
+
+    if selected_topology == "Multi VLAN":
+        prefix = "26"
+    else:
+        prefix = "24"
+
+    link_number = list(interface_map.keys()).index(target_link) + 1
+    test_ip = "172.31." + str(link_number) + ".1"
+
+    # PC에 실제 IP 추가
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "ip", "addr", "replace",
+        client_ip + "/" + prefix,
+        "dev", client_interface
+    ])
+
+    # 반대편 장비에 실제 게이트웨이 IP 추가
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + gateway_device,
+        "ip", "addr", "replace",
+        correct_gateway + "/" + prefix,
+        "dev", gateway_interface
+    ])
+
+    # 게이트웨이 너머 통신 확인용 IP
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + gateway_device,
+        "ip", "addr", "replace",
+        test_ip + "/32",
+        "dev", "lo"
+    ])
+
+    # 응답이 대상 PC 링크로 돌아가도록 경로 설정
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + gateway_device,
+        "ip", "route", "replace",
+        client_ip + "/32",
+        "dev", gateway_interface
+    ])
+
+    # 정상 기본 게이트웨이 설정
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "ip", "route", "replace",
+        "default",
+        "via", correct_gateway,
+        "dev", client_interface
+    ])
+
+    print("Gateway test configuration completed")
+
+    return target_link, test_ip
+
+
+# 잘못된 기본 게이트웨이 실제 적용
+def inject_wrong_gateway(client_name, target_link, wrong_gateway):
+    interface = interface_map[target_link][client_name]
+
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "ip", "route", "replace",
+        "default",
+        "via", wrong_gateway,
+        "dev", interface,
+        "onlink"
+    ])
+
+    print("Fault Injected:", client_name, "Wrong Gateway", wrong_gateway)
+
+
+# 기본 게이트웨이 실제 복구
+def recover_default_gateway(client_name, target_link, correct_gateway):
+    interface = interface_map[target_link][client_name]
+
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "ip", "route", "replace",
+        "default",
+        "via", correct_gateway,
+        "dev", interface
+    ])
+
+    print("Recovery:", client_name, "Gateway", correct_gateway)
+
+
+# 기본 게이트웨이 통신 테스트
+def test_gateway_connection(client_name, target_ip):
+    result = subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "ping", "-c", "2",
+        "-W", "1",
+        target_ip
+    ])
+
+    if result.returncode == 0:
+        print("Gateway Test: SUCCESS")
+        return True
+
+    else:
+        print("Gateway Test: FAILED")
+        return False
+
+
+
+
+# Static Route 테스트 환경 설정
+def configure_static_route_test(target_router, correct_next_hop):
+    target_link = None
+    neighbor_router = None
+
+    for router_link in router_links:
+        left_router = router_link[0]
+        left_ip = router_link[1]
+        right_router = router_link[2]
+        right_ip = router_link[3]
+
+        if target_router == left_router and correct_next_hop == right_ip:
+            neighbor_router = right_router
+            target_link = find_link(left_router, right_router)
+            break
+
+        if target_router == right_router and correct_next_hop == left_ip:
+            neighbor_router = left_router
+            target_link = find_link(left_router, right_router)
+            break
+
+    if target_link == None:
+        print("Static route test link not found")
+        return None, None
+
+    target_interface = interface_map[target_link][target_router]
+
+    router_number = router_names.index(target_router) + 1
+    test_ip = "172.30." + str(router_number) + ".1"
+
+    # 이웃 라우터 loopback에 테스트 목적지 설정
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + neighbor_router,
+        "ip", "addr", "replace",
+        test_ip + "/32",
+        "dev", "lo"
+    ])
+
+    # 정상 정적 경로 설정
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + target_router,
+        "ip", "route", "replace",
+        test_ip + "/32",
+        "via", correct_next_hop,
+        "dev", target_interface
+    ])
+
+    print("Static route test configuration completed")
+
+    return target_link, test_ip
+
+
+# 잘못된 Static Route 실제 적용
+def inject_wrong_static_route(
+    target_router,
+    target_link,
+    test_ip,
+    wrong_next_hop
+):
+    interface = interface_map[target_link][target_router]
+
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + target_router,
+        "ip", "route", "replace",
+        test_ip + "/32",
+        "via", wrong_next_hop,
+        "dev", interface,
+        "onlink"
+    ])
+
+    print(
+        "Fault Injected:",
+        target_router,
+        "Wrong Next Hop",
+        wrong_next_hop
+    )
+
+
+# Static Route 실제 복구
+def recover_static_route(
+    target_router,
+    target_link,
+    test_ip,
+    correct_next_hop
+):
+    interface = interface_map[target_link][target_router]
+
+    subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + target_router,
+        "ip", "route", "replace",
+        test_ip + "/32",
+        "via", correct_next_hop,
+        "dev", interface
+    ])
+
+    print(
+        "Recovery:",
+        target_router,
+        "Next Hop",
+        correct_next_hop
+    )
+
+
+# Static Route 통신 테스트
+def test_static_route_connection(target_router, test_ip):
+    result = subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + target_router,
+        "ping", "-c", "2",
+        "-W", "1",
+        test_ip
+    ])
+
+    if result.returncode == 0:
+        print("Static Route Test: SUCCESS")
+        return True
+
+    else:
+        print("Static Route Test: FAILED")
+        return False
+
+
+# ACL 테스트용 iptables 준비
+def prepare_acl_test(client_name):
+    result = subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "sh", "-c",
+        "command -v iptables >/dev/null 2>&1 || "
+        "apk add --no-cache iptables >/dev/null 2>&1"
+    ])
+
+    if result.returncode == 0:
+        return True
+
+    print("iptables installation failed")
+    return False
+
+
+# 실제 ACL 차단 적용
+def inject_acl_block(client_name, target_ip):
+    if prepare_acl_test(client_name) == False:
+        return False
+
+    result = subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "iptables", "-I", "OUTPUT",
+        "-d", target_ip,
+        "-j", "DROP"
+    ])
+
+    if result.returncode == 0:
+        print("Fault Injected:", client_name, "ACL Block", target_ip)
+        return True
+
+    print("ACL fault injection failed")
+    return False
+
+
+# 실제 ACL 차단 제거
+def recover_acl_block(client_name, target_ip):
+    result = subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "iptables", "-D", "OUTPUT",
+        "-d", target_ip,
+        "-j", "DROP"
+    ])
+
+    if result.returncode == 0:
+        print("Recovery:", client_name, "ACL removed")
+        return True
+
+    print("ACL recovery failed")
+    return False
+
+
+# ACL 통신 테스트
+def test_acl_connection(client_name, target_ip):
+    result = subprocess.run([
+        "docker", "exec",
+        "clab-netfaultlab-" + client_name,
+        "ping", "-c", "2",
+        "-W", "1",
+        target_ip
+    ])
+
+    if result.returncode == 0:
+        print("ACL Test: SUCCESS")
+        return True
+
+    else:
+        print("ACL Test: FAILED")
+        return False
+
+
 # Seed 설정
 seed = input("Seed (Enter = Random): ")
 
@@ -600,13 +937,43 @@ if selected_fault == "Wrong Static Route":
             destination,
             wrong_next_hop
         )
-        
+
+        # 실제 Static Route 테스트 환경 설정
+        target_link, route_test_ip = configure_static_route_test(
+            target_router,
+            old_next_hop
+        )
+
         fault_info = {
             "target": target_router,
             "destination": destination,
             "old_value": old_next_hop,
-            "wrong_value": wrong_next_hop
+            "wrong_value": wrong_next_hop,
+            "link": target_link,
+            "test_ip": route_test_ip
         }
+
+        # 장애 전 통신 확인
+        print("\n=== Healthy Static Route Test ===")
+        test_static_route_connection(
+            target_router,
+            route_test_ip
+        )
+
+        # 실제 잘못된 정적 경로 적용
+        inject_wrong_static_route(
+            target_router,
+            target_link,
+            route_test_ip,
+            wrong_next_hop
+        )
+
+        # 장애 후 통신 확인
+        print("\n=== Fault Static Route Test ===")
+        test_static_route_connection(
+            target_router,
+            route_test_ip
+        )
 
 elif selected_fault == "Wrong Default Gateway":
     if selected_topology == "Multi VLAN":
@@ -638,17 +1005,42 @@ elif selected_fault == "Wrong Default Gateway":
         )
 
         client_name = client_names[target_client_index]
+        client_ip = client_ips[target_client_index]
 
         old_gateway = client_gateways[target_client_index]
         wrong_gateway = lan_network + ".254"
 
         client_gateways[target_client_index] = wrong_gateway
 
+    # 실제 게이트웨이 테스트 환경 설정
+    target_link, gateway_test_ip = configure_gateway_test(
+        client_name,
+        client_ip,
+        old_gateway
+    )
+
     fault_info = {
         "target": client_name,
         "old_value": old_gateway,
-        "wrong_value": wrong_gateway
+        "wrong_value": wrong_gateway,
+        "link": target_link,
+        "test_ip": gateway_test_ip
     }
+
+    # 장애 전 통신 확인
+    print("\n=== Healthy Gateway Test ===")
+    test_gateway_connection(client_name, gateway_test_ip)
+
+    # 실제 잘못된 기본 게이트웨이 적용
+    inject_wrong_gateway(
+        client_name,
+        target_link,
+        wrong_gateway
+    )
+
+    # 장애 후 통신 확인
+    print("\n=== Fault Gateway Test ===")
+    test_gateway_connection(client_name, gateway_test_ip)
 
 elif selected_fault == "Wrong IP Address":
     target_client_index = random.randint(
@@ -743,6 +1135,22 @@ elif selected_fault == "ACL Block":
 
     target_server = random.choice(servers_names)
 
+    # 대상 PC 링크 찾기
+    target_link = None
+
+    for link in links:
+        if link[0] == client_name or link[1] == client_name:
+            target_link = link
+            break
+
+    # 현재 링크 반대편 테스트 IP를 ACL 테스트 대상으로 사용
+    if target_link[0] == client_name:
+        peer_device = target_link[1]
+    else:
+        peer_device = target_link[0]
+
+    acl_test_ip = link_test_ips[target_link][peer_device]
+
     acl_rules.append(
         ("DENY", client_ip, target_server)
     )
@@ -750,8 +1158,30 @@ elif selected_fault == "ACL Block":
     fault_info = {
         "target": client_name,
         "client_ip": client_ip,
-        "server": target_server
+        "server": target_server,
+        "link": target_link,
+        "test_ip": acl_test_ip
     }
+
+    # 장애 전 통신 확인
+    print("\n=== Healthy ACL Test ===")
+    test_acl_connection(
+        client_name,
+        acl_test_ip
+    )
+
+    # 실제 ACL 차단 적용
+    inject_acl_block(
+        client_name,
+        acl_test_ip
+    )
+
+    # 장애 후 통신 확인
+    print("\n=== Fault ACL Test ===")
+    test_acl_connection(
+        client_name,
+        acl_test_ip
+    )
 
 # 네트워크 정보 출력
 print("\n=== Network Links ===")
@@ -907,6 +1337,21 @@ if selected_fault == "Wrong Static Route":
                     fault_info["old_value"]
                 )
 
+        # 실제 Static Route 복구
+        recover_static_route(
+            target_router,
+            fault_info["link"],
+            fault_info["test_ip"],
+            fault_info["old_value"]
+        )
+
+        # 복구 후 통신 확인
+        print("\n=== Recovery Static Route Test ===")
+        test_static_route_connection(
+            target_router,
+            fault_info["test_ip"]
+        )
+
         print("Recovery Successful")
 
     else:
@@ -931,6 +1376,20 @@ elif selected_fault == "Wrong Default Gateway":
 
         else:
             client_gateways[target_index] = fault_info["old_value"]
+
+        # 실제 기본 게이트웨이 복구
+        recover_default_gateway(
+            target_client,
+            fault_info["link"],
+            fault_info["old_value"]
+        )
+
+        # 복구 후 통신 확인
+        print("\n=== Recovery Gateway Test ===")
+        test_gateway_connection(
+            target_client,
+            fault_info["test_ip"]
+        )
 
         print("Recovery Successful")
 
@@ -1002,6 +1461,19 @@ elif selected_fault == "ACL Block":
 
         if target_rule in acl_rules:
             acl_rules.remove(target_rule)
+
+        # 실제 ACL 차단 제거
+        recover_acl_block(
+            fault_info["target"],
+            fault_info["test_ip"]
+        )
+
+        # 복구 후 통신 확인
+        print("\n=== Recovery ACL Test ===")
+        test_acl_connection(
+            fault_info["target"],
+            fault_info["test_ip"]
+        )
 
         print("Recovery Successful")
 
